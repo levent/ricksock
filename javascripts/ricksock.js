@@ -10,12 +10,7 @@ $(document).ready(function(){
 
   // This is a cosm user level GET api key
   var api_key = "LLfnk2zkkn7YUTphaX-D1e-EYAySAKxpOWF5RUQzVm5TRT0g";
-  var counter = 0;
-  var average = 0;
-  var rate = 1;
-  var date = new Date;
-  var stop = false;
-  var tv = 2;
+  var ticksTreatment = 'glow';
 
   var graphs = [];
   var datapoints = [];
@@ -44,6 +39,13 @@ $(document).ready(function(){
     });
     graphs.push(graph);
     graph.render();
+
+    var yAxis = new Rickshaw.Graph.Axis.Y( {
+      graph: graph,
+      ticksTreatment: ticksTreatment
+    } );
+
+    yAxis.render();
   }
 
   function createStackedGraph(datastreams) {
@@ -72,8 +74,6 @@ $(document).ready(function(){
       series: series
     });
     graph.render();
-
-    var ticksTreatment = 'glow';
 
     var yAxis = new Rickshaw.Graph.Axis.Y( {
       graph: graph,
