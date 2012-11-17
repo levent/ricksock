@@ -30,7 +30,7 @@ $(document).ready(function(){
       width: 400,
       height: 200,
       renderer: 'line',
-      max: 100,
+      max: 110,
       stroke: true,
       series: [{
         color: 'steelblue',
@@ -49,27 +49,29 @@ $(document).ready(function(){
   }
 
   function createStackedGraph(datastreams) {
-    var palette = new Rickshaw.Color.Palette( { scheme: 'spectrum14' } );
+    var palette = new Rickshaw.Color.Palette( { scheme: 'colorwheel' } );
     var series = [];
     $.map(datastreams, function(ds, index) {
-      var points = $.map(ds.datapoints, function(datapoint) {
-        return {
-          x : Math.floor(Date.parse(datapoint.at) / 1000),
-          y : Number(datapoint.value)
-        }
-      });
-      series[index] = {
-        color: palette.color(),
-        data: points
-      };
+      if (typeof(ds.datapoints) !== 'undefined') {
+        var points = $.map(ds.datapoints, function(datapoint) {
+          return {
+            x : Math.floor(Date.parse(datapoint.at) / 1000),
+            y : Number(datapoint.value)
+          }
+        });
+        series[index] = {
+          color: palette.color(),
+          data: points
+        };
+      }
     });
     $('<div id="mega-graph"></div>').prependTo($('#charts'));
+    console.log(series);
     var graph = new Rickshaw.Graph({
       element: document.getElementById('mega-graph'),
       width: 400,
       height: 200,
       renderer: 'area',
-      max: 100,
       stroke: true,
       series: series
     });
@@ -97,9 +99,10 @@ $(document).ready(function(){
 
   cosm.setKey(api_key);
 
-  cosm.feed.history("40360", {'duration':'1minute','interval':0}, function (data) {
+  cosm.feed.history(38997, {'duration':'1minute','interval':0}, function (data) {
     $.each(data.datastreams, function(index, ds) {
-      createGraph(ds);
+      if (typeof(ds.datapoints) !== 'undefined')
+        createGraph(ds);
     });
     var filtered = data.datastreams.filter(function(dp){
       return dp.id.match(/cpu_\d*$/)
@@ -107,7 +110,7 @@ $(document).ready(function(){
     createStackedGraph(filtered);
   });
 
-  cosm.feed.subscribe(40360, function(event, data) {
+  cosm.feed.subscribe(38997, function(event, data) {
     $.each(data.datastreams, function(index, ds) {
       updateGraph(ds, index);
     });
